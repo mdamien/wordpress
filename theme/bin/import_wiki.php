@@ -9,15 +9,13 @@ require __DIR__.'/../vendor/autoload.php';
 use Goutte\Client;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 
-$wiki_base_url = 'https://wiki.nuitdebout.fr/api.php';
-
-$client = new Client();
+define('WIKI_BASE_URL', 'https://wiki.nuitdebout.fr/api.php');
 
 function wiki_get_cities()
 {
-	global $wiki_base_url, $client;
-
-	$client->request('GET', $wiki_base_url.'?action=query&generator=categorymembers&gcmtitle=Cat%C3%A9gorie:Ville_NuitDebout&prop=pagecllimit=max&gcmlimit=max&format=json');
+	$client = new Client();
+	$client->request('GET', WIKI_BASE_URL
+		.'?action=query&generator=categorymembers&gcmtitle=Cat%C3%A9gorie:Ville_NuitDebout&prop=pagecllimit=max&gcmlimit=max&format=json');
 
 	$data = json_decode($client->getResponse()->getContent(), true);
 
@@ -38,20 +36,11 @@ function wiki_get_cities()
 	return $cities;
 }
 
-
-
-function wiki_text_extract_places($wiki_text)
-{
-	if (preg_match('#<h2><span class="mw-headline" id="Lieux"></h2>#', $wiki_text, $matches)) {
-		print_r($matches);
-	}
-}
-
 function wiki_get_city_details($city)
 {
-	global $wiki_base_url, $client;
-
-	$client->request('GET', $wiki_base_url.'?action=parse&page='.$city['page_title'].'&contentmodel=wikitext&format=json');
+	$client = new Client();
+	$client->request('GET', WIKI_BASE_URL
+		.'?action=parse&page='.$city['page_title'].'&contentmodel=wikitext&format=json');
 
 	$data = json_decode($client->getResponse()->getContent(), true);
 
@@ -77,15 +66,116 @@ function wiki_get_city_details($city)
 		});
 	}
 
+	if ($place == 'Rassemblement sur la place XXXXXXX.') {
+		$place = null;
+	}
+
 	return [
 		'name' => $city['name'],
 		'place' => $place,
+		'links' => $data['parse']['externallinks'],
+		'wiki_url' => 'https://wiki.nuitdebout.fr/wiki/'.$city['page_title'],
 	];
 }
 
-$cities = wiki_get_cities();
+function get_map_data($city_name)
+{
+	static $city_map;
 
+	if (empty($city_map)) {
+		$geojson = json_decode(file_get_contents(__DIR__.'/nuitdebout.geojson'), true);
+		$city_map = [];
+		foreach ($geojson['features'] as $feature) {
+			$name = $feature['properties']['name'];
+
+			$name = preg_replace('/Nuit ?Debout/i', '', $name);
+			$name = str_replace('#', '', $name);
+			$name = trim($name);
+
+			if (!empty($name)) {
+				$city_map[$name] = [
+					'coordinates' => $feature['geometry']['coordinates'],
+					'description' => isset($feature['properties']['description']) ? $feature['properties']['description'] : null,
+				];
+			}
+		}
+	}
+
+	if (isset($city_map[$city_name])) {
+		return $city_map[$city_name];
+	}
+}
+
+function get_city_page($city_name)
+{
+	static $city_pages;
+
+	if (empty($city_pages)) {
+		$pages = get_pages([
+			'child_of' => 17,
+			'post_type' => 'page',
+			'post_status' => 'publish'
+		]);
+
+		$city_pages = [];
+		foreach ($pages as $page) {
+			$city_pages[$page->post_title] = $page;
+		}
+	}
+
+	return isset($city_pages[$city_name]) ? $city_pages[$city_name] : null;
+}
+
+//////////////////////////////////////////
+
+$parent_id = 17;
+
+$cities = wiki_get_cities();
 foreach ($cities as $city) {
-	$city_details = wiki_get_city_details($city);
-	print_r($city_details);
+
+	$city = wiki_get_city_details($city);
+
+	echo "Processing {$city['name']}…\n";
+
+	$is_new = false;
+	if (!$city_page = get_city_page($city['name'])) {
+		echo "- Page does not exist, creating page…\n";
+		$is_new = true;
+
+		$post_params = array(
+			'post_title'    =>  $city['name'],
+			'post_content'  => '',
+			'post_status'   => 'publish',
+			'post_author'   => 1,
+			'post_type' => 'page',
+			'post_parent' =>  $parent_id,
+		);
+
+		$page_id = wp_insert_post($post_params, true);
+		if (is_wp_error($page_id)) {
+			echo "ERROR:\n";
+			foreach ($page_id->get_error_messages() as $error) {
+				echo "{$error}\n";
+			}
+			exit(1);
+		}
+
+		$city_page = get_post($page_id);
+	} else {
+		echo "- Page already exists\n";
+	}
+
+	update_post_meta($city_page->ID, '_wp_page_template', 'page-ville.php');
+	update_post_meta($city_page->ID, 'wiki_page_url', $city['wiki_url']);
+
+	if ($map_data = get_map_data($city['name'])) {
+		echo "- Updating map position\n";
+		update_post_meta($city_page->ID, 'map_position', implode(',', $map_data['coordinates']));
+
+		if ($is_new && !empty($map_data['description'])) {
+			$city_page->post_content = $map_data['description'];
+			wp_update_post($city_page);
+		}
+	}
+
 }
