@@ -69,11 +69,42 @@ function wiki_get_city_details($city)
 	if ($place == 'Rassemblement sur la place XXXXXXX.') {
 		$place = null;
 	}
+	$externallinks =  $data['parse']['externallinks'];
+	$externallinks_ =  [];
+
+	if($externallinks){
+		foreach ($externallinks as $link) {
+
+			if($link !== 'https://twitter.com/NOM_DU_COMPTE_TWITTER' && $link !=='https://twitter.com/NOMBRE_DE_LA_CUENTA_TWITTER'){
+
+            	if ( preg_match('/twitter.com/', $link) ) {
+               		$externallinks_['twitter_page_url'][] = $link;
+           		}
+           		if ( preg_match('/chat.nuitdebout.fr/', $link) ) {
+               		$externallinks_['chat_page_url'][] = $link;
+           		}
+           		if ( preg_match('/openstreetmap.org/', $link) ) {
+               		$externallinks_['openstreetmap'][] = $link;
+           		}
+           		if ( preg_match('/facebook.com/', $link) ) {
+           			if ( preg_match('/events/', $link) ) {
+           				$externallinks_['facebook_event_url'][] = $link;
+           			}
+           			else{
+           			  $externallinks_['facebook_page_url'][] = $link;
+           			}
+           		}
+           		if ( preg_match('/@/', $link) ) {
+               		$externallinks_['contact_emails'][] = $link;
+           		}
+        	}
+		}
+	}
 
 	return [
 		'name' => $city['name'],
 		'place' => $place,
-		'links' => $data['parse']['externallinks'],
+		'links' => $externallinks_,
 		'wiki_url' => 'https://wiki.nuitdebout.fr/wiki/'.$city['page_title'],
 	];
 }
@@ -129,7 +160,6 @@ function get_city_page($city_name)
 //////////////////////////////////////////
 
 $parent_id = 17;
-
 $cities = wiki_get_cities();
 foreach ($cities as $city) {
 
@@ -164,9 +194,17 @@ foreach ($cities as $city) {
 	} else {
 		echo "- Page already exists\n";
 	}
-
+	// echo '-----'.$city_page->ID;
 	update_post_meta($city_page->ID, '_wp_page_template', 'page-ville.php');
 	update_post_meta($city_page->ID, 'wiki_page_url', $city['wiki_url']);
+
+	if ( $city['links'] ) {
+		print_r($city['links']);
+		foreach ( $city['links'] as $key => $link) {
+			update_post_meta($city_page->ID, $key, implode("\n",$link) );
+		}
+
+	}
 
 	if ($map_data = get_map_data($city['name'])) {
 		echo "- Updating map position\n";
@@ -177,5 +215,6 @@ foreach ($cities as $city) {
 			wp_update_post($city_page);
 		}
 	}
+
 
 }
