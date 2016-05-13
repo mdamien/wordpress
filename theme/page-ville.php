@@ -8,6 +8,7 @@
  */
 ?>
 <?php while (have_posts()) : the_post(); ?>
+<?php $fields = get_fields($post->ID) ?>
 
 <?php get_template_part('templates/module', 'screen') ?>
 
@@ -15,7 +16,6 @@
 	<div class="section__content">
 		<div class="post city-post">
 			<?php the_content(); ?>
-			<?php edit_post_link('edit', '<p>', '</p>') ?>
 		</div>
 	</div>
 </section>
@@ -30,22 +30,23 @@
 
 	</div>
 	<div class="section__actions-container">
-		<a class="primary-button" href="https://wiki.nuitdebout.fr/wiki/Villes/<?php echo get_the_title(); ?>">
+		<a class="primary-button" href="<?php echo $fields['wiki_page_url'] ?>">
 			Venez sur le wiki
 		</a>
 	</div>
 </section>
 
 <section class="section section--gray">
+
 	<h2 class="section__title">Activez le site de votre ville</h2>
 	<div class="section__content section__content--center ">
 		<p>Pour déployer un site de votre ville debout et le gérer comme vous le souhaitez :</p>
 	</div>
 	<div class="section__actions-container">
-		<a class="primary-button" href="<?php echo get_bloginfo('home').'/demande-de-creation-dun-site-pour-sa-ville/' ?>">(bientôt)</a>
+		<a class="primary-button" href="<?php echo get_bloginfo('url').'/demande-de-creation-dun-site-pour-sa-ville/' ?>">(bientôt)</a>
 	</div>
 	<div class="section__content section__content--center ">
-		<p>Vous avez déja un site ? <a href="<?php echo get_bloginfo('home').'/contact/' ?>">Envoyez-nous</a> le lien</p>
+		<p>Vous avez déja un site ? <a href="<?php echo get_bloginfo('url').'/contact/' ?>">Envoyez-nous</a> le lien</p>
 	</div>
 </section>
 
