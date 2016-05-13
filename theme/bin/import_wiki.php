@@ -157,6 +157,27 @@ function get_city_page($city_name)
 	return isset($city_pages[$city_name]) ? $city_pages[$city_name] : null;
 }
 
+function get_acf_field_id($field_name)
+{
+	$fields_map = [
+		'twitter_page_url'  => 'field_331qsd1d8218',
+		'facebook_page_url' => 'field_3315qs318218',
+		'contact_emails'    => 'field_57360fe247c7b',
+		'wiki_page_url'     => 'field_3314574576sdf45658',
+		'map_position'		=> 'field_5736075ea71fd',
+	];
+
+	return isset($fields_map[$field_name]) ? $fields_map[$field_name] : null;
+}
+
+function update_acf_field($post_id, $field_name, $field_value)
+{
+	if ($field_id = get_acf_field_id($field_name)) {
+		$result = update_field($field_id, $field_value, $post_id);
+		echo "- Updated field {$field_name} : ".var_export($result, true)."\n";
+	}
+}
+
 //////////////////////////////////////////
 
 $parent_id = 17;
@@ -192,29 +213,31 @@ foreach ($cities as $city) {
 
 		$city_page = get_post($page_id);
 	} else {
-		echo "- Page already exists\n";
+		echo "- Page already exists ({$city_page->ID})\n";
 	}
-	// echo '-----'.$city_page->ID;
+
 	update_post_meta($city_page->ID, '_wp_page_template', 'page-ville.php');
-	update_post_meta($city_page->ID, 'wiki_page_url', $city['wiki_url']);
+
+	update_acf_field($city_page->ID, 'wiki_page_url', $city['wiki_url']);
 
 	if ( $city['links'] ) {
-		print_r($city['links']);
 		foreach ( $city['links'] as $key => $link) {
-			update_post_meta($city_page->ID, $key, implode("\n",$link) );
+			update_acf_field($city_page->ID, $key, implode("\n", $link));
 		}
-
 	}
 
 	if ($map_data = get_map_data($city['name'])) {
 		echo "- Updating map position\n";
-		update_post_meta($city_page->ID, 'map_position', implode(',', $map_data['coordinates']));
 
 		if ($is_new && !empty($map_data['description'])) {
 			$city_page->post_content = $map_data['description'];
 			wp_update_post($city_page);
 		}
+
+		update_acf_field($city_page->ID, 'map_position', [
+			'address' => $city['name'],
+			'lat' => $map_data['coordinates'][1],
+			'lng' => $map_data['coordinates'][0],
+		]);
 	}
-
-
 }
