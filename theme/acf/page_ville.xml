@@ -16,7 +16,7 @@
 <!-- 7. WordPress will then import each of the posts, pages, comments, categories, etc. -->
 <!--    contained in this file into your site. -->
 
-<!-- generator="WordPress/4.5.2" created="2016-05-13 17:37" -->
+<!-- generator="WordPress/4.5.2" created="2016-05-13 18:13" -->
 <rss version="2.0"
   xmlns:excerpt="http://wordpress.org/export/1.1/excerpt/"
   xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -29,7 +29,7 @@
   <title>nuitdebout.dev</title>
   <link>http://nuitdebout.dev</link>
   <description></description>
-  <pubDate>Fri, 13 May 2016 17:37:34 +0000</pubDate>
+  <pubDate>Fri, 13 May 2016 18:13:18 +0000</pubDate>
   <language></language>
   <wp:wxr_version>1.1</wp:wxr_version>
   <wp:base_site_url>http://nuitdebout.dev/</wp:base_site_url>
@@ -70,11 +70,11 @@
     </wp:postmeta>
     <wp:postmeta>
       <wp:meta_key>field_3315qs318218</wp:meta_key>
-      <wp:meta_value><![CDATA[a:14:{s:3:"key";s:18:"field_3315qs318218";s:5:"label";s:24:"Page Facebook officielle";s:4:"name";s:17:"facebook_page_url";s:4:"type";s:4:"text";s:12:"instructions";s:3:"url";s:8:"required";s:1:"0";s:13:"default_value";s:0:"";s:11:"placeholder";s:0:"";s:7:"prepend";s:0:"";s:6:"append";s:0:"";s:10:"formatting";s:4:"html";s:9:"maxlength";s:0:"";s:17:"conditional_logic";a:3:{s:6:"status";s:1:"0";s:5:"rules";a:1:{i:0;a:3:{s:5:"field";s:20:"field_33157182e6hj18";s:8:"operator";s:2:"==";s:5:"value";s:1:"1";}}s:8:"allorany";s:3:"all";}s:8:"order_no";i:2;}]]></wp:meta_value>
+      <wp:meta_value><![CDATA[a:13:{s:3:"key";s:18:"field_3315qs318218";s:5:"label";s:24:"Page Facebook officielle";s:4:"name";s:17:"facebook_page_url";s:4:"type";s:8:"textarea";s:12:"instructions";s:17:"un lien par ligne";s:8:"required";s:1:"0";s:13:"default_value";s:0:"";s:11:"placeholder";s:0:"";s:9:"maxlength";s:0:"";s:4:"rows";s:0:"";s:10:"formatting";s:2:"br";s:17:"conditional_logic";a:3:{s:6:"status";s:1:"0";s:5:"rules";a:1:{i:0;a:3:{s:5:"field";s:20:"field_33157182e6hj18";s:8:"operator";s:2:"==";s:5:"value";s:1:"1";}}s:8:"allorany";s:3:"all";}s:8:"order_no";i:2;}]]></wp:meta_value>
     </wp:postmeta>
     <wp:postmeta>
       <wp:meta_key>field_331qsd1d8218</wp:meta_key>
-      <wp:meta_value><![CDATA[a:14:{s:3:"key";s:18:"field_331qsd1d8218";s:5:"label";s:23:"Page Twitter officielle";s:4:"name";s:16:"twitter_page_url";s:4:"type";s:4:"text";s:12:"instructions";s:3:"url";s:8:"required";s:1:"0";s:13:"default_value";s:0:"";s:11:"placeholder";s:0:"";s:7:"prepend";s:0:"";s:6:"append";s:0:"";s:10:"formatting";s:4:"html";s:9:"maxlength";s:0:"";s:17:"conditional_logic";a:3:{s:6:"status";s:1:"0";s:5:"rules";a:1:{i:0;a:3:{s:5:"field";s:20:"field_33157182e6hj18";s:8:"operator";s:2:"==";s:5:"value";s:1:"1";}}s:8:"allorany";s:3:"all";}s:8:"order_no";i:3;}]]></wp:meta_value>
+      <wp:meta_value><![CDATA[a:13:{s:3:"key";s:18:"field_331qsd1d8218";s:5:"label";s:23:"Page Twitter officielle";s:4:"name";s:16:"twitter_page_url";s:4:"type";s:8:"textarea";s:12:"instructions";s:17:"Une url par ligne";s:8:"required";s:1:"0";s:13:"default_value";s:0:"";s:11:"placeholder";s:0:"";s:9:"maxlength";s:0:"";s:4:"rows";s:0:"";s:10:"formatting";s:2:"br";s:17:"conditional_logic";a:3:{s:6:"status";s:1:"0";s:5:"rules";a:1:{i:0;a:3:{s:5:"field";s:20:"field_33157182e6hj18";s:8:"operator";s:2:"==";s:5:"value";s:1:"1";}}s:8:"allorany";s:3:"all";}s:8:"order_no";i:3;}]]></wp:meta_value>
     </wp:postmeta>
     <wp:postmeta>
       <wp:meta_key>field_331qdqd456456456452348</wp:meta_key>
